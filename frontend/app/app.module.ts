@@ -5,7 +5,9 @@ import { HttpModule }    from '@angular/http';
 
 import { AppComponent }  from './app.component';
 import { GalleryComponent } from './gallery.component';
-import { ImageMetadataService } from './image-metadata.service';
+import { AddPhotoComponent } from './add-photo.component';
+import { ViewPhotoComponent } from './view-photo.component';
+import { ImageService } from './image.service';
 import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
@@ -16,9 +18,11 @@ import { AppRoutingModule } from './app-routing.module';
    ],
   declarations: [
     AppComponent,
-    GalleryComponent
+    GalleryComponent,
+    AddPhotoComponent,
+    ViewPhotoComponent
   ],
-  providers: [ ImageMetadataService ],
+  providers: [ ImageService ],
   bootstrap:    [ AppComponent ]
 })
 export class AppModule { }

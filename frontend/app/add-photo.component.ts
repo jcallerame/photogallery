@@ -1,0 +1,79 @@
+import { Component } from '@angular/core';
+import { OnInit } from '@angular/core';
+import { ImageService } from './image.service';
+import { ImageMetadata } from './image-metadata';
+import { Router } from '@angular/router';
+
+@Component({
+  moduleId: module.id,
+  selector: 'add-photo',
+  templateUrl: 'add-photo.component.html',
+  styleUrls: ['add-photo.component.css'],
+  providers: [ImageService]
+})
+
+export class AddPhotoComponent {
+  uploadedFile: any;
+  imageUrl: string = null;
+  constructor(private router: Router, private imageService: ImageService) {}
+
+  handleUpload(event: any): void {
+    this.uploadedFile = event.target.files[0];
+    if (!/^image\//.test(this.uploadedFile.type)) {
+      //TODO: Show error message
+      return;
+    }
+    let image = document.createElement("img");
+    //image.classList.add("obj");
+    //image.file = this.uploadedFile;
+    let imageHolder = document.getElementById('photo-holder');
+    if (imageHolder.firstChild) {
+      imageHolder.removeChild(imageHolder.firstChild);
+    }
+    imageHolder.appendChild(image);
+
+    image.style.maxWidth = '600px';
+    image.style.maxHeight = '450px';
+
+    let reader = new FileReader();
+    reader.onload = ((aImg) => {
+      return (e: any) => {
+        this.imageUrl = e.target.result;
+        aImg.src = this.imageUrl;
+      };
+    })(image);
+    reader.readAsDataURL(this.uploadedFile);
+  }
+
+  handleSubmit(): void {
+    if (this.imageUrl == null) {
+      //TODO: Show error -- no image uploaded
+      return;
+    }
+    let re = /^data:(image\/.*?);base64,(.*)$/;
+    let matches = re.exec(this.imageUrl);
+    if (matches == null) {
+      //TODO: Show error
+      console.log("Error: Image URL not in expected format.");
+      return;
+    }
+    let mimeType = matches[1];
+    let base64Data = matches[2];
+    let blob = this.imageService.base64ToBlob(base64Data, mimeType);
+    console.log("imageUrl.length:", this.imageUrl.length);
+    console.log("base64Data.length:", base64Data.length);
+    console.log("typeof blob:", typeof blob);
+    let metadata = new ImageMetadata();
+    metadata.title = (<HTMLInputElement>document.getElementById('title')).value;
+    metadata.date = parseInt((<HTMLInputElement>document.getElementById('date')).value);
+    metadata.location = (<HTMLInputElement>document.getElementById('location')).value;
+    this.imageService.addImage(mimeType, blob).then(
+      imageId => {
+        metadata.id = imageId;
+        this.imageService.updateImageMetadata(metadata).then(() => {
+          this.router.navigate(['/gallery']);
+        });
+      }
+    );
+  }
+}

@@ -1,6 +1,13 @@
-<h1>Images Metadata</h1>
-<ul>
-  <li *ngFor="let imageMetadata of imagesMetadata">
-    {{imageMetadata.id}} - {{imageMetadata.title}} - {{imageMetadata.date}} - {{imageMetadata.location}}
-  </li>
-</ul>
+<h1>Photo Gallery</h1>
+<table border="1">
+  <tr *ngFor="let row of rows">
+    <td *ngFor="let imageMetadata of imagesMetadataGrid[row]" (click)="viewPhoto(imageMetadata);">
+      <img src="http://localhost:8080/photogallery/rest/thumbnails/{{imageMetadata.id}}" width="200" height="150"><br>
+      {{imageMetadata.title}}<br>
+      {{imageMetadata.date}}<br>
+      {{imageMetadata.location}}
+    </td>
+  </tr>
+</table>
+<br>
+<a routerLink="/add-photo"><button>Add Image</button></a>

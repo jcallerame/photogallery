@@ -1,0 +1,10 @@
+<h1>View Photo</h1>
+<div *ngIf="imageMetadata">
+  <div id="photo-holder">
+    <a href="http://localhost:8080/photogallery/rest/images/{{imageMetadata.id}}"><img src="http://localhost:8080/photogallery/rest/images/{{imageMetadata.id}}" id="photo"></a>
+  </div><br>
+  Title: {{imageMetadata.title}}<br>
+  Date: {{imageMetadata.date}}<br>
+  Location: {{imageMetadata.location}}<br>
+  <br>
+</div>

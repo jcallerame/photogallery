@@ -108,6 +108,7 @@ public class RestImpl implements RestApi {
 	 */
 	@Override
 	public Response uploadImage(HttpServletRequest request) throws IOException {
+		LOG.debug("Adding image.");
 		return addOrReplaceImage(null, request);
 	}
 	
@@ -116,6 +117,7 @@ public class RestImpl implements RestApi {
 	 */
 	@Override
 	public Response replaceImage(String id, HttpServletRequest request) throws IOException {
+		LOG.debug("Replacing image.");
 		return addOrReplaceImage(id, request);
 	}
 	
@@ -133,31 +135,37 @@ public class RestImpl implements RestApi {
 			throws IOException {
 		int contentLength = request.getContentLength();
 		String mimeType = request.getContentType();
+		LOG.debug("content length: " + contentLength);
+		LOG.debug("content type: " + mimeType);
 		if (!isImageFileSizeAcceptable(contentLength)) {
 			return Response.status(Response.Status.REQUEST_ENTITY_TOO_LARGE)
 					.type(APPLICATION_JSON).entity("{}").build();
 		}
-		InputStream imageInputStream = request.getInputStream();
-		byte[] imageBytes = IOUtils.toByteArray(imageInputStream);
+		InputStream requestInputStream = request.getInputStream();
+		byte[] imageBytes = IOUtils.toByteArray(requestInputStream);
+		InputStream imageInputStream = new ByteArrayInputStream(imageBytes);
+		LOG.debug("imageBytes length: " + imageBytes.length);
 		//Create thumbnail
 		IMOperation op = new IMOperation();
 		op.addImage("-");
 		op.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
 		op.addImage("jpeg:-");
 		ByteArrayOutputStream os = new ByteArrayOutputStream(contentLength);
-		Pipe inPipe = new Pipe(imageInputStream, null);
-		Pipe outPipe = new Pipe(null, os);
+		Pipe pipeIn = new Pipe(imageInputStream, null);
+		Pipe pipeOut = new Pipe(null, os);
 		ConvertCmd convert = new ConvertCmd(true);
 		convert.setSearchPath(GRAPHICS_MAGICK_COMMAND_DIR);
-		convert.setInputProvider(inPipe);
-		convert.setOutputConsumer(outPipe);
+		convert.setInputProvider(pipeIn);
+		convert.setOutputConsumer(pipeOut);
 		try {
 			convert.run(op);
+			imageInputStream.close();
+			os.close();
 		} catch (InterruptedException ie) {
-			LOG.error("GraphicsMagick convert command was interrupted.", ie);
+			LOG.error("GraphicsMagick convert command was interrupted", ie);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		} catch (IM4JavaException im4je) {
-			LOG.error("An error occurred while executing the GraphicsMagick convert command.",
+			LOG.error("An error occurred while executing the GraphicsMagick convert command",
 					im4je);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		}

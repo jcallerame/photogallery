@@ -1,0 +1,8 @@
+<h1>Add Photo</h1>
+<div id="photo-holder"></div><br>
+<input type="file" id="upload" (change)="handleUpload($event)"><br><br>
+Title: <input type="text" id="title" name="title"><br>
+Date: <input type="text" id="date" name="date"><br>
+Location: <input type="text" id="location" name="location"><br>
+<br>
+<button (click)="handleSubmit()">Submit</button><br>
