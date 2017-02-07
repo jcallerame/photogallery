@@ -1,0 +1,12 @@
+#photo-holder {
+  display: flex;
+  justify-content: center;
+  width: 600px;
+  height: 450px;
+  border: 1px solid black;
+}
+
+#photo {
+  max-width: 600px;
+  max-height: 450px;
+}

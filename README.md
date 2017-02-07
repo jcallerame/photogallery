@@ -23,7 +23,20 @@ mongod
 
 If you get an error, you may need to create and give permissions to the data directory mongodb is trying to use.
 
-Start Wildfly, then go to http://localhost:9990 and deploy the file `photogallery/backend/build/libs/photogallery.war`.
+Launch a mongodb shell by typing:
+```
+mongo
+```
+
+In the mongo shell, create the database (by using it) and the user:
+```
+use photogallery;
+db.createUser({user: "photogal", pwd: "ph0t0s", roles: [{role: "readWrite", db: "photogallery"}]});
+```
+
+Copy the properties file to your wildfly base directory.
+
+Start Wildfly from the directory to which you copied the properties file, then go to http://localhost:9990 and deploy the file `photogallery/backend/build/libs/photogallery.war`.
 
 ## Building and Running the Front End
 
@@ -33,6 +46,7 @@ Type:
 ```
 cd frontend
 npm install
+npm install angular2-cookie --save
 npm start
 ```
 

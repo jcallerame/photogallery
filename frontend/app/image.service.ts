@@ -8,7 +8,7 @@ const SERVICE_BASE_URL = 'http://localhost:8080/photogallery/rest';
 @Injectable()
 export class ImageService {
   private imagesMetadataUrl = SERVICE_BASE_URL + '/images-metadata';
-  private addImageUrl = SERVICE_BASE_URL + '/images';
+  private imagesUrl = SERVICE_BASE_URL + '/images';
 
   constructor (private http: Http) {}
 
@@ -16,9 +16,14 @@ export class ImageService {
     return this.http.get(this.imagesMetadataUrl)
       .toPromise()
       .then(response => {
-        var data = response.json() as ImageMetadata[];
         console.log("response: ", response);
-        return data;
+        let data = response.json();
+        let ims: ImageMetadata[] = [];
+        for (let props of data) {
+          let imageMetadata = new ImageMetadata(props);
+          ims.push(imageMetadata);
+        }
+        return ims;
       })
       .catch(this.handleError);
   }
@@ -27,9 +32,9 @@ export class ImageService {
     return this.http.get(this.imagesMetadataUrl + '/' + id)
       .toPromise()
       .then(response => {
-        let data = response.json() as ImageMetadata;
-        console.log("image metadata: ", data);
-        return data;
+        let imageMetadata = new ImageMetadata(response.json());
+        console.log("image metadata: ", imageMetadata);
+        return imageMetadata;
       })
       .catch(this.handleError);
   }
@@ -37,7 +42,7 @@ export class ImageService {
   addImage(mimeType: string, binaryImageData: Blob): Promise<string> {
     let headers = new Headers();
     headers.set("Content-Type", mimeType);
-    return this.http.post(this.addImageUrl, binaryImageData, {headers: headers})
+    return this.http.post(this.imagesUrl, binaryImageData, {headers: headers})
       .toPromise()
       .then(response => {
         let imageId = response.json().id;
@@ -49,6 +54,12 @@ export class ImageService {
 
   updateImageMetadata(imageMetadata: ImageMetadata): Promise<void> {
     return this.http.put(this.imagesMetadataUrl + '/' + imageMetadata.id, imageMetadata)
+      .toPromise()
+      .catch(this.handleError);
+  }
+
+  deleteImage(imageMetadata: ImageMetadata): Promise<void> {
+    return this.http.delete(this.imagesUrl + '/' + imageMetadata.id)
       .toPromise()
       .catch(this.handleError);
   }

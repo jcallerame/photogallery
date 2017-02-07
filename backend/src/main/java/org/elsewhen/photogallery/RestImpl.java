@@ -149,6 +149,9 @@ public class RestImpl implements RestApi {
 		IMOperation op = new IMOperation();
 		op.addImage("-");
 		op.resize(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
+		//JPEG doesn't support transparency -- so make transparent pixels white
+		op.background("white");
+		op.flatten();
 		op.addImage("jpeg:-");
 		ByteArrayOutputStream os = new ByteArrayOutputStream(contentLength);
 		Pipe pipeIn = new Pipe(imageInputStream, null);
@@ -252,10 +255,42 @@ public class RestImpl implements RestApi {
 		Datastore datastore = MongoManager.getInstance().getDatastore();
 		Query<Image> updateQuery = datastore.createQuery(Image.class)
 				.field("_id").equal(id);
-		UpdateOperations<Image> ops = datastore.createUpdateOperations(
-				Image.class).set("title", imageMetadata.getTitle())
-				.set("date", imageMetadata.getDate())
-				.set("location", imageMetadata.getLocation());
+		UpdateOperations<Image> ops = datastore.createUpdateOperations(Image.class);
+		//Morphia won't allow you to set a field to null on an update.  Argh!
+		//So, remove any fields where the value is null.
+		String title = imageMetadata.getTitle();
+		if (title == null) {
+			ops.unset("title");
+		} else {
+			ops.set("title", title);
+		}
+		//Year, month, and day must all be null or all be non-null.
+		//If mixed nulls and non-nulls, an exception will be thrown when performing the
+		//update operation.
+		Integer capturedYear = imageMetadata.getCapturedYear();
+		Integer capturedMonth = imageMetadata.getCapturedMonth();
+		Integer capturedDay = imageMetadata.getCapturedDay();
+		if (capturedYear == null && capturedMonth == null && capturedDay == null) {
+			ops.unset("capturedYear");
+			ops.unset("capturedMonth");
+			ops.unset("capturedDay");
+		} else {
+			ops.set("capturedYear", capturedYear);
+			ops.set("capturedMonth", capturedMonth);
+			ops.set("capturedDay", capturedDay);
+		}
+		String location = imageMetadata.getLocation();
+		if (location == null) {
+			ops.unset("location");
+		} else {
+			ops.set("location", location);
+		}
+		String notes = imageMetadata.getNotes();
+		if (notes == null) {
+			ops.unset("notes");
+		} else {
+			ops.set("notes", notes);
+		}
 		datastore.update(updateQuery, ops);
 		return Response.ok().build();
 	}

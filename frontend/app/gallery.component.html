@@ -1,13 +1,39 @@
 <h1>Photo Gallery</h1>
-<table border="1">
-  <tr *ngFor="let row of rows">
-    <td *ngFor="let imageMetadata of imagesMetadataGrid[row]" (click)="viewPhoto(imageMetadata);">
-      <img src="http://localhost:8080/photogallery/rest/thumbnails/{{imageMetadata.id}}" width="200" height="150"><br>
-      {{imageMetadata.title}}<br>
-      {{imageMetadata.date}}<br>
-      {{imageMetadata.location}}
-    </td>
-  </tr>
-</table>
+Sort: <select id="sort-select" name="sort-select" [(ngModel)]="this.sortBy" (change)="changeSorting($event);">
+  <option value="title">By Title</option>
+  <option value="dateDesc" selected>By Date: Newest first</option>
+  <option value="dateAsc">By Date: Oldest first</option>
+  <option value="location">By Location</option>
+</select>
+<br><br>
+<div id="photo-table-container">
+  <table id="photo-table">
+    <tr *ngFor="let row of rows">
+      <td *ngFor="let imageMetadata of imagesMetadataGrid[currentPage - 1][row]" (mouseover)="showControls(imageMetadata);" (mouseout)="hideControls(imageMetadata);" class="photo-table-cell">
+        <div id="controls-{{imageMetadata.id}}" class="controls">
+          <div class="edit-button" [routerLink]="['/edit-photo-info', imageMetadata.id]"></div>
+          <div class="delete-button" (click)="showDeletePhotoModal(imageMetadata);"></div>
+        </div>
+        <div class="photo-holder">
+          <img src="http://localhost:8080/photogallery/rest/thumbnails/{{imageMetadata.id}}" class="photo" (click)="viewPhoto(imageMetadata);"><br>
+        </div>
+        <div (click)="viewPhoto(imageMetadata);" class="metadata">
+          {{imageMetadata.title}}<br>
+          {{imageMetadata.shortDateString}}<br>
+          {{imageMetadata.location}}
+        </div>
+      </td>
+    </tr>
+  </table>
+  <br>
+  <div style="text-align: center;">
+    <span class="pagenav" (click)="goToFirstPage();">&lt;&lt;</span>&nbsp;&nbsp;
+    <span class="pagenav" (click)="goToPreviousPage();">&lt;</span>&nbsp;&nbsp;
+    Page {{currentPage}} of {{numPages}}&nbsp;&nbsp;
+    <span class="pagenav" (click)="goToNextPage();">&gt;</span>&nbsp;&nbsp;
+    <span class="pagenav" (click)="goToLastPage();">&gt;&gt;</span>
+  </div>
+</div>
 <br>
 <a routerLink="/add-photo"><button>Add Image</button></a>
+<modals (deletePhoto)="deletePhoto();"></modals>

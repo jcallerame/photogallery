@@ -12,8 +12,11 @@ public class Image {
 	@Id
 	private String id;
 	private String title;
-	private Date date;
+	private Integer capturedYear;
+	private Integer capturedMonth;
+	private Integer capturedDay;
 	private String location;
+	private String notes;
 	@JsonIgnore private byte[] thumbnailData;
 	@JsonIgnore private byte[] imageData;
 	@JsonIgnore private String imageMimeType;
@@ -33,17 +36,35 @@ public class Image {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public Date getDate() {
-		return date;
+	public Integer getCapturedYear() {
+		return capturedYear;
 	}
-	public void setDate(Date date) {
-		this.date = date;
+	public void setCapturedYear(Integer capturedYear) {
+		this.capturedYear = capturedYear;
+	}
+	public Integer getCapturedMonth() {
+		return capturedMonth;
+	}
+	public void setCapturedMonth(Integer capturedMonth) {
+		this.capturedMonth = capturedMonth;
+	}
+	public Integer getCapturedDay() {
+		return capturedDay;
+	}
+	public void setCapturedDay(Integer capturedDay) {
+		this.capturedDay = capturedDay;
 	}
 	public String getLocation() {
 		return location;
 	}
 	public void setLocation(String location) {
 		this.location = location;
+	}
+	public String getNotes() {
+		return notes;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 	public byte[] getThumbnailData() {
 		return thumbnailData;

@@ -18,11 +18,29 @@ import 'rxjs/add/operator/switchMap';
 export class ViewPhotoComponent implements OnInit {
   imageMetadata: ImageMetadata;
 
-  constructor(private imageService: ImageService, private route: ActivatedRoute) {}
+  constructor(private imageService: ImageService, private router: Router,
+    private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.params
       .switchMap((params: Params) => this.imageService.getImageMetadata(params['id']))
       .subscribe((imageMetadata: ImageMetadata) => this.imageMetadata = imageMetadata);
+  }
+
+  showDeletePhotoModal(imageMetadata: ImageMetadata) {
+    let overlay = $('#overlay');
+    let deleteModal = $('#delete-modal');
+    $(overlay).show();
+    $(deleteModal).show();
+  }
+
+  deletePhoto() {
+    this.imageService.deleteImage(this.imageMetadata).then(() => {
+      let overlay = $('#overlay');
+      let deleteModal = $('#delete-modal');
+      $(deleteModal).hide();
+      $(overlay).hide();
+      this.router.navigate(['/gallery']);
+    });
   }
 }

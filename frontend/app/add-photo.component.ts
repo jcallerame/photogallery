@@ -1,20 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { ImageService } from './image.service';
 import { ImageMetadata } from './image-metadata';
 import { Router } from '@angular/router';
+import { ImageMetadataFormFieldsComponent } from './image-metadata-form-fields.component';
+declare var $: any;
 
 @Component({
   moduleId: module.id,
   selector: 'add-photo',
   templateUrl: 'add-photo.component.html',
-  styleUrls: ['add-photo.component.css'],
+  styleUrls: ['add-photo.component.css', 'errors.css'],
   providers: [ImageService]
 })
 
-export class AddPhotoComponent {
+export class AddPhotoComponent{
   uploadedFile: any;
   imageUrl: string = null;
+  imageMetadata: ImageMetadata = new ImageMetadata({});
+  formErrors: any = {'general': []};
+
+  @ViewChild(ImageMetadataFormFieldsComponent)
+  private formFieldsComponent: ImageMetadataFormFieldsComponent;
+
   constructor(private router: Router, private imageService: ImageService) {}
 
   handleUpload(event: any): void {
@@ -45,9 +53,26 @@ export class AddPhotoComponent {
     reader.readAsDataURL(this.uploadedFile);
   }
 
-  handleSubmit(): void {
+  validate(): boolean {
+    let hasFieldErrors = false;
+    this.formErrors = this.formFieldsComponent.getFieldErrors();
+    if (!$.isEmptyObject(this.formErrors)) {
+      hasFieldErrors = true;
+    }
+    if (this.formErrors['general'] === undefined) {
+      this.formErrors['general'] = [];
+    }
     if (this.imageUrl == null) {
-      //TODO: Show error -- no image uploaded
+      this.formErrors['general'].push('no-photo-uploaded');
+    }
+    if (hasFieldErrors) {
+      this.formErrors['general'].push('field-errors');
+    }
+    return (this.formErrors['general'].length === 0);
+  }
+
+  handleSubmit(): void {
+    if (!this.validate()) {
       return;
     }
     let re = /^data:(image\/.*?);base64,(.*)$/;
@@ -63,17 +88,17 @@ export class AddPhotoComponent {
     console.log("imageUrl.length:", this.imageUrl.length);
     console.log("base64Data.length:", base64Data.length);
     console.log("typeof blob:", typeof blob);
-    let metadata = new ImageMetadata();
-    metadata.title = (<HTMLInputElement>document.getElementById('title')).value;
-    metadata.date = parseInt((<HTMLInputElement>document.getElementById('date')).value);
-    metadata.location = (<HTMLInputElement>document.getElementById('location')).value;
     this.imageService.addImage(mimeType, blob).then(
       imageId => {
-        metadata.id = imageId;
-        this.imageService.updateImageMetadata(metadata).then(() => {
+        this.imageMetadata.id = imageId;
+        this.imageService.updateImageMetadata(this.imageMetadata).then(() => {
           this.router.navigate(['/gallery']);
         });
       }
     );
+  }
+
+  handleCancel(): void {
+    window.history.back();
   }
 }

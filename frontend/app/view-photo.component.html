@@ -4,7 +4,14 @@
     <a href="http://localhost:8080/photogallery/rest/images/{{imageMetadata.id}}"><img src="http://localhost:8080/photogallery/rest/images/{{imageMetadata.id}}" id="photo"></a>
   </div><br>
   Title: {{imageMetadata.title}}<br>
-  Date: {{imageMetadata.date}}<br>
+  Date Taken: {{imageMetadata.longDateString}}<br>
   Location: {{imageMetadata.location}}<br>
+  Notes: {{imageMetadata.notes}}<br>
+  <br>
+  <button [routerLink]="['/edit-photo-info', imageMetadata.id]">Edit Photo Information</button>
+  <button (click)="showDeletePhotoModal();">Delete Photo</button>
   <br>
 </div>
+<br>
+<a routerLink="/gallery">Back to gallery</a><br>
+<modals (deletePhoto)="deletePhoto();"></modals>

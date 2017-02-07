@@ -1,8 +1,16 @@
 <h1>Add Photo</h1>
+<div *ngIf="formErrors['general'].length > 0" class="errorbox">
+  <template ngFor let-error [ngForOf]="formErrors['general']">
+    <p *ngIf="error === 'no-photo-uploaded'" class="error">
+      Please upload a photo before continuing.
+    </p>
+    <p *ngIf="error === 'field-errors'" class="error">
+      Some fields have errors.  Please correct the field errors indicated below.
+    </p>
+  </template>
+</div>
 <div id="photo-holder"></div><br>
-<input type="file" id="upload" (change)="handleUpload($event)"><br><br>
-Title: <input type="text" id="title" name="title"><br>
-Date: <input type="text" id="date" name="date"><br>
-Location: <input type="text" id="location" name="location"><br>
+<input type="file" id="upload" (change)="handleUpload($event)" accept="image/jpeg,image/png,image/gif"><br><br>
+<image-metadata-form-fields [imageMetadata]="imageMetadata" [formErrors]="formErrors"></image-metadata-form-fields>
 <br>
-<button (click)="handleSubmit()">Submit</button><br>
+<button (click)="handleSubmit()">Submit</button> <button (click)="handleCancel();">Cancel</button><br>

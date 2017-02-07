@@ -1,0 +1,55 @@
+.controls {
+  visibility: hidden;
+  z-index: 1;
+  position: relative;
+}
+
+.edit-button, .delete-button {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+}
+
+.edit-button {
+  right: 26px;
+  background-image: url('edit-icon.png');
+}
+
+.delete-button {
+  text-align: center;
+  right: 0;
+  background-image: url('delete-icon.png');
+}
+
+.metadata {
+  text-align: center;
+  font-size: 11pt;
+}
+
+#photo-table {
+  margin: -20px;
+  border-spacing: 20px;
+}
+
+.photo-table-cell {
+  width: 200px;
+  vertical-align: top;
+}
+
+.photo-holder {
+  display: flex;
+  justify-content: center;
+  width: 200px;
+  height: 150px;
+}
+
+.photo {
+  max-width: 200px;
+  max-height: 150px;
+}
+
+.pagenav {
+  color: blue;
+  cursor: pointer;
+}

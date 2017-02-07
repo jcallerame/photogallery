@@ -1,0 +1,18 @@
+<h1>Edit Photo Information</h1>
+<div *ngIf="formErrors['general'].length > 0" class="errorbox">
+  <template ngFor let-error [ngForOf]="formErrors['general']">
+    <p *ngIf="error === 'field-errors'" class="error">
+      Some fields have errors.  Please correct the field errors indicated below.
+    </p>
+  </template>
+</div>
+<div *ngIf="imageMetadata">
+  <div id="photo-holder">
+    <a href="http://localhost:8080/photogallery/rest/images/{{imageMetadata.id}}"><img src="http://localhost:8080/photogallery/rest/images/{{imageMetadata.id}}" id="photo"></a>
+  </div><br>
+  <form #imageMetadataForm="ngForm">
+    <image-metadata-form-fields [imageMetadata]="imageMetadata" [formErrors]="formErrors"></image-metadata-form-fields>
+    <button (click)="handleSubmit();">Update</button> <button (click)="handleCancel();">Cancel</button>
+  </form>
+  <br>
+</div>
