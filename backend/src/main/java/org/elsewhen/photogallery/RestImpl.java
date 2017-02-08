@@ -265,8 +265,7 @@ public class RestImpl implements RestApi {
 			ops.set("title", title);
 		}
 		//Year, month, and day must all be null or all be non-null.
-		//If mixed nulls and non-nulls, an exception will be thrown when performing the
-		//update operation.
+		//If mixed nulls and non-nulls, return an error response.
 		Integer capturedYear = imageMetadata.getCapturedYear();
 		Integer capturedMonth = imageMetadata.getCapturedMonth();
 		Integer capturedDay = imageMetadata.getCapturedDay();
@@ -274,10 +273,50 @@ public class RestImpl implements RestApi {
 			ops.unset("capturedYear");
 			ops.unset("capturedMonth");
 			ops.unset("capturedDay");
-		} else {
+		} else if (capturedYear != null && capturedMonth != null && capturedDay != null) {
+			//Validate date
+			if (capturedYear < 1000) {
+				LOG.error("Error: Years before 1000 A.D. not supported.");
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			}
+			if (capturedMonth < 1 || capturedMonth > 12) {
+				LOG.error("Error: capturedMonth must be in range 1..12.");
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			}
+			if (capturedDay < 1 || capturedDay > 31) {
+				LOG.error("Error: capturedDay must be in range 1..31.");
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			}
+			int numDays = 31;
+			//30 days has September, April, June, and November
+			if (capturedMonth == 9 || capturedMonth == 4 || capturedMonth == 6 || 
+					capturedMonth == 11) {
+				numDays = 30;
+			} else if (capturedMonth == 2) {
+				//February
+				if (capturedYear % 4 == 0 && 
+						(capturedYear % 100 != 0 || capturedYear % 400 == 0)) {
+					//Leap year
+					numDays = 29;
+				} else {
+					numDays = 28;
+				}
+			}
+			if (capturedDay > numDays) {
+				LOG.error("Month " + capturedMonth + " of year " + capturedYear + " only has " +
+						numDays + " days.  capturedDay has a value of " + capturedDay +
+						", which is invalid in this month.");
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			}
 			ops.set("capturedYear", capturedYear);
 			ops.set("capturedMonth", capturedMonth);
 			ops.set("capturedDay", capturedDay);
+		} else {
+			//Mixed nulls and non-nulls for date fields; log an error and return an error 
+			//response.
+			LOG.error("An error was found while updating image metadata: Date fields " +
+					"contain mixed nulls and non-nulls.");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		}
 		String location = imageMetadata.getLocation();
 		if (location == null) {

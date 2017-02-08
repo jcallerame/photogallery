@@ -1,8 +1,6 @@
 # Photo Gallery
 
-This is my Photo Gallery web application.  It is not finished yet.  The back end is complete but is not fully tested.  The front end is in its early stages.
-
-The back end is written in Java and uses MongoDB, and the front end is written in Javascript using the Angular 2 framework.
+This is my Photo Gallery web application.  It lets you browse photos, add photos, edit photo information, and delete photos.  The back end is written in Java and uses MongoDB, Morphia, im4java, and GraphicsMagick, and the front end is written in TypeScript using the Angular 2 framework.
 
 ## Building and Running the Back End
 

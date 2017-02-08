@@ -18,7 +18,7 @@ export class GalleryComponent implements OnInit {
   imagesMetadata: ImageMetadata[] = null;
   numPages: number;
   numRows: number = 3;
-  numCols: number = 4;
+  numCols: number = 5;
   currentPage: number = 1;
   rows: number[] = [];
   imagesMetadataGrid: ImageMetadata[][][] = [];
