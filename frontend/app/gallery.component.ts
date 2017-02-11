@@ -15,7 +15,7 @@ declare var $: any;
 })
 
 export class GalleryComponent implements OnInit {
-  imagesMetadata: ImageMetadata[] = null;
+  imagesMetadata: ImageMetadata[] = [];
   numPages: number;
   numRows: number = 3;
   numCols: number = 5;
