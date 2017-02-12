@@ -35,33 +35,10 @@ public class RestImpl implements RestApi {
 	private static final String GRAPHICS_MAGICK_COMMAND_DIR = "/usr/local/bin";
 	private static final String MIME_TYPE_JPEG = "image/jpeg";
 	
-	/**
-	 * Gets the public site configuration properties.
-	 * @return a Response object containing all of the site configuration properties whose
-	 * names start with "public.".
-	 */
-	@Override
-	public Response getPublicConfigProperties() {
-		Properties allProperties;
-		try {
-			allProperties = SiteConfiguration.getInstance().getProperties();
-		} catch (IOException ioe) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		}
-		Properties publicProperties = new Properties();
-		Set<String> allPropertyNames = allProperties.stringPropertyNames();
-		for (String propertyName : allPropertyNames) {
-			if (propertyName.startsWith("public.")) {
-				publicProperties.setProperty(propertyName, allProperties.getProperty(propertyName));
-			}
-		}
-		return Response.ok().entity(publicProperties).build();
-	}
-	
 	private static boolean isImageFileSizeAcceptable(int contentLength) {
 		String maxImageFileSizeStr = null;
 		try {
-			maxImageFileSizeStr = SiteConfiguration.getInstance().getProperty("public.maxImageFileSize");
+			maxImageFileSizeStr = SiteConfiguration.getInstance().getProperty("maxImageFileSize");
 		} catch (IOException ioe) {
 			//Already logged in SiteConfiguration.getInstance().
 		}
@@ -133,6 +110,8 @@ public class RestImpl implements RestApi {
 	 */
 	public Response addOrReplaceImage(String id, HttpServletRequest request) 
 			throws IOException {
+		String graphicsMagickCommandDir = SiteConfiguration.getInstance().getProperty(
+				"graphicsMagickCommandDirectory", "/usr/local/bin");
 		int contentLength = request.getContentLength();
 		String mimeType = request.getContentType();
 		LOG.debug("content length: " + contentLength);
@@ -157,7 +136,7 @@ public class RestImpl implements RestApi {
 		Pipe pipeIn = new Pipe(imageInputStream, null);
 		Pipe pipeOut = new Pipe(null, os);
 		ConvertCmd convert = new ConvertCmd(true);
-		convert.setSearchPath(GRAPHICS_MAGICK_COMMAND_DIR);
+		convert.setSearchPath(graphicsMagickCommandDir);
 		convert.setInputProvider(pipeIn);
 		convert.setOutputConsumer(pipeOut);
 		try {

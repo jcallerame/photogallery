@@ -24,11 +24,6 @@ import org.elsewhen.photogallery.domain.Image;
 
 @Path("/")
 public interface RestApi {
-		
-	@Path("siteconfig")
-	@GET
-	@Produces(APPLICATION_JSON)
-	public Response getPublicConfigProperties();
 	
 	/**
 	 * Gets an image
