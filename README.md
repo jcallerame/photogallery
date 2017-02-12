@@ -6,7 +6,7 @@ This is my Photo Gallery web application.  It lets you browse photos, add photos
 
 Install GraphicsMagick (http://www.graphicsmagick.org/), and also install the JPEG (http://www.ijg.org/), ZLIB (http://www.zlib.net/), and LIBPNG (http://www.libpng.org/pub/png/pngcode.html) libraries.
 
-Install Java SE 8 JDK, MongoDB, Gradle, and Wildfly.
+Install Java SE 8 JDK, MongoDB, Gradle 2.12, and Wildfly.
 
 Type:
 ```
@@ -44,7 +44,6 @@ Type:
 ```
 cd frontend
 npm install
-npm install angular2-cookie --save
 npm start
 ```
 
