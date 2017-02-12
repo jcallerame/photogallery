@@ -32,7 +32,12 @@ use photogallery;
 db.createUser({user: "photogal", pwd: "ph0t0s", roles: [{role: "readWrite", db: "photogallery"}]});
 ```
 
-Copy the properties file to your wildfly base directory.
+Edit photogallery.properties and set the graphicsMagickCommandDirectory property
+to the directory containing your GraphicsMagick (gm) executable.  Type
+`which gm` to find out where this executable is located.  Do NOT include the
+executable name ("gm") in the path.
+
+Copy photogallery.properties to your wildfly base directory.
 
 Start Wildfly from the directory to which you copied the properties file, then go to http://localhost:9990 and deploy the file `photogallery/backend/build/libs/photogallery.war`.
 
