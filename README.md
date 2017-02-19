@@ -6,7 +6,7 @@ This is my Photo Gallery web application.  It lets you browse photos, add photos
 
 Install GraphicsMagick (http://www.graphicsmagick.org/), and also install the JPEG (http://www.ijg.org/), ZLIB (http://www.zlib.net/), and LIBPNG (http://www.libpng.org/pub/png/pngcode.html) libraries.
 
-Install Java SE 8 JDK, MongoDB, Gradle 2.12, and Wildfly.
+Install Java SE 8 JDK, and the latest versions of MongoDB (tested with version 3.4.2), Gradle (tested with version 3.3), and Wildfly (tested with version 10.1.0 Final).
 
 Type:
 ```
